@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 from datatool import YELP
 import torch
 import argparse

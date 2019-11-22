@@ -16,7 +16,7 @@ def check_integrity(fpath, md5):
         return False
     return True
 
-def DownloadUrl(url, root, filename, md5):
+def download_url(url, root, filename, md5):
     from six.moves import urllib
 
     root = os.path.expanduser(root)
@@ -44,6 +44,6 @@ def DownloadUrl(url, root, filename, md5):
                       ' Downloading ' + url + ' to ' + fpath)
                 urllib.request.urlretrieve(url, fpath)
 
-def DataParse(path):
+def data_parse(path):
     dataset = pd.read_csv(path, sep=",")
     return dataset
