@@ -108,3 +108,7 @@ data/
 
 # ckp
 check_point/
+
+# OSX cache
+.DS_Store
+
