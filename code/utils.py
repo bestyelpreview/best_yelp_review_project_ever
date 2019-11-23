@@ -1,5 +1,4 @@
 import pandas as pd
-<<<<<<< HEAD
 import numpy as np
 import os
 import errno
@@ -7,11 +6,6 @@ import hashlib
 import nltk
 from tqdm import tqdm
 import itertools
-=======
-import os
-import errno
-import hashlib
->>>>>>> fef500e92e36c4c61cac07e4ecb57e347a2d83e0
 
 def check_integrity(fpath, md5):
     if not os.path.isfile(fpath):
@@ -57,7 +51,6 @@ def download_url(url, root, filename, md5):
 def data_parse(path):
     dataset = pd.read_csv(path, sep=",")
     return dataset
-<<<<<<< HEAD
 
 def preprocess_data(data_path, preprocess_data_path, train=True):
     if train:
@@ -126,5 +119,3 @@ def preprocess_data(data_path, preprocess_data_path, train=True):
                 for token in tokens:
                     fout.write("%i " % token)
                 fout.write("\n")
-=======
->>>>>>> fef500e92e36c4c61cac07e4ecb57e347a2d83e0
