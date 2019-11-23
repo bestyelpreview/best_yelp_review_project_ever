@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 
 from datatool import YELP
-from utils import preprocess_data
 import torch
 import torch.utils.data
 import argparse
@@ -20,11 +19,11 @@ if __name__ == "__main__":
                         default=128, help='the size of each batch')
 
     # set training parameters
-    parser.add_argument('--gpu', type=bool, default=False, 
+    parser.add_argument('--gpu', type=bool, default=False,
                         help='use gpu for training')
-    parser.add_argument('--load', type=bool, default=False, 
+    parser.add_argument('--load', type=bool, default=False,
                         help='load model from check point')
-    parser.add_argument('--optim', type=str, default='adam', 
+    parser.add_argument('--optim', type=str, default='adam',
                         help='optimizer type, adam or rmsprop')
 
     # set path of data and ckp
@@ -36,7 +35,7 @@ if __name__ == "__main__":
                         help='path of check point')
 
     args = parser.parse_args()
-    
+
     # Install the punkt package
     if not os.path.exists("../nltk_data"):
         os.mkdir("../nltk_data")
@@ -44,8 +43,10 @@ if __name__ == "__main__":
     nltk.data.path.append("../nltk_data")
 
     # Load dataset with proprocessing, download if empt. Preprocess will only do once.
-    train_set = YELP(root=args.data, preprocess_path=args.preprocess, train=True, download=True)
-    test_set = YELP(root=args.data, preprocess_path=args.preprocess, train=False, download=False)
+    train_set = YELP(
+        root=args.data, preprocess_path=args.preprocess, train=True, download=True)
+    test_set = YELP(root=args.data, preprocess_path=args.preprocess,
+                    train=False, download=False)
 
     # Load batch data automatically
     train_loader = torch.utils.data.DataLoader(

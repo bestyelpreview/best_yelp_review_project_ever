@@ -1,6 +1,7 @@
 import os
 from utils import download_url, data_parse, preprocess_data
 
+
 class YELP(object):
     """
     `yelp-review-polarity <https://www.kaggle.com/irustandi/yelp-review-polarity/version/1>`_ Dataset.
@@ -13,28 +14,28 @@ class YELP(object):
     def __init__(self, root, preprocess_path, train=True, download=False):
         """
         Args:
-            root (string): Root directory of dataset where directory ``yelp_review_polarity_csv`` 
+            root (string): Root directory of dataset where directory ``yelp_review_polarity_csv``
                 exists or will be saved to if download is set to True.
             preprocess_path （string): Directory of preprocess dataset, and the directory will be
                 created if not exists.
-            train (bool, optional): If True, creates dataset from training set, 
+            train (bool, optional): If True, creates dataset from training set,
                 otherwise creates from test set.
-            download (bool, optional): If true, downloads the dataset from the internet and puts it in root directory. 
+            download (bool, optional): If true, downloads the dataset from the internet and puts it in root directory.
                 If dataset is already downloaded, it is not downloaded again.
         """
         self.root = root
         self.preprocess_path = preprocess_path
         self.train = train
-        
+
         if download:
             self.download()
-        
+
         if not os.path.exists(self.preprocess_path):
             os.mkdir(self.preprocess_path)
-        
+
         data_path = os.path.join(self.root, self.base_folder)
         preprocess_data(data_path, self.preprocess_path, self.train)
-            
+
         self.data_set = self.get_data(train=self.train)
 
     def __getitem__(self, index):
@@ -46,7 +47,7 @@ class YELP(object):
 
     def download(self):
         import zipfile
-        
+
         download_url(self.url, self.root, self.filename, self.tgz_md5)
 
         # extract file
