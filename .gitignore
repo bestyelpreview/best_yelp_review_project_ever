@@ -105,6 +105,7 @@ venv.bak/
 
 # data
 data/
+nltk_data/
 
 # ckp
 check_point/
