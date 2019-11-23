@@ -1,0 +1,6 @@
+tqdm==4.31.1
+nltk==3.4.5
+pandas==0.24.2
+torch==1.0.1.post2
+six==1.12.0
+numpy==1.15.4
