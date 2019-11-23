@@ -1,5 +1,5 @@
 import os
-from utils import download_url, data_parse
+from utils import download_url, data_parse, preprocess_data
 
 class YELP(object):
     """
@@ -10,38 +10,39 @@ class YELP(object):
     filename = "yelp-review-polarity.zip"
     tgz_md5 = 'e6dfe992364fc80ec098e48edd5afc9b'
 
-    def __init__(self, root, train=True, download=False):
+    def __init__(self, root, preprocess_path, train=True, download=False):
         """
         Args:
             root (string): Root directory of dataset where directory ``yelp_review_polarity_csv`` 
                 exists or will be saved to if download is set to True.
+            preprocess_path （string): Directory of preprocess dataset, and the directory will be
+                created if not exists.
             train (bool, optional): If True, creates dataset from training set, 
                 otherwise creates from test set.
             download (bool, optional): If true, downloads the dataset from the internet and puts it in root directory. 
                 If dataset is already downloaded, it is not downloaded again.
         """
         self.root = root
+        self.preprocess_path = preprocess_path
         self.train = train
         
         if download:
             self.download()
         
-        self.train_set = self.get_data(train=True)
-        self.test_set = self.get_data(train=False)
+        if not os.path.exists(self.preprocess_path):
+            os.mkdir(self.preprocess_path)
+        
+        data_path = os.path.join(self.root, self.base_folder)
+        preprocess_data(data_path, self.preprocess_path, self.train)
+            
+        self.data_set = self.get_data(train=self.train)
 
     def __getitem__(self, index):
-        if self.train:
-            label, review = self.train_set.iloc[index, :]
-        else:
-            label, review = self.test_set.iloc[index, :]
-
-        return label, review
+        label, review = self.data_set.iloc[index, :]
+        return label, [int(x) for x in review.split()]
 
     def __len__(self):
-        if self.train:
-            return len(self.train_set)
-        else:
-            return len(self.test_set)
+        return len(self.data_set)
 
     def download(self):
         import zipfile
@@ -60,8 +61,8 @@ class YELP(object):
         """
         self.train = train
         if self.train:
-            path = os.path.join(self.root, self.base_folder) + '/train.csv'
+            path = os.path.join(self.preprocess_path) + '/yelp_train.csv'
         else:
-            path = os.path.join(self.root, self.base_folder) + '/test.csv'
+            path = os.path.join(self.preprocess_path) + '/yelp_test.csv'
         dataset = data_parse(path)
         return dataset
