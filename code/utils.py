@@ -6,6 +6,7 @@ import hashlib
 import nltk
 from tqdm import tqdm
 import itertools
+from google_drive_downloader import GoogleDriveDownloader as gdd
 
 
 def check_integrity(fpath, md5):
@@ -22,7 +23,7 @@ def check_integrity(fpath, md5):
     return True
 
 
-def download_url(url, root, filename, md5):
+def download_url(file_id, root, filename, md5):
     from six.moves import urllib
 
     root = os.path.expanduser(root)
@@ -41,14 +42,18 @@ def download_url(url, root, filename, md5):
         print('Using downloaded and verified file: ' + fpath)
     else:
         try:
-            print('Downloading ' + url + ' to ' + fpath)
-            urllib.request.urlretrieve(url, fpath)
+            print('Downloading to ' + fpath)
+            gdd.download_file_from_google_drive(file_id=file_id,
+                                                dest_path=fpath,
+                                                unzip=True)
         except:
             if url[:5] == 'https':
                 url = url.replace('https:', 'http:')
                 print('Failed download. Trying https -> http instead.'
-                      ' Downloading ' + url + ' to ' + fpath)
-                urllib.request.urlretrieve(url, fpath)
+                      ' Downloading to ' + fpath)
+                gdd.download_file_from_google_drive(file_id=file_id,
+                                                    dest_path=fpath,
+                                                    unzip=True)
 
 
 def data_parse(path):
