@@ -7,6 +7,7 @@ import nltk
 from tqdm import tqdm
 import itertools
 from google_drive_downloader import GoogleDriveDownloader as gdd
+import pdb
 
 
 def check_integrity(fpath, md5):
@@ -82,9 +83,20 @@ def preprocess_data(data_path, preprocess_data_path, train=True):
 
         all_tokens = itertools.chain.from_iterable(x_train)
         word_to_id = {token: idx for idx, token in enumerate(set(all_tokens))}
-
         all_tokens = itertools.chain.from_iterable(x_train)
         id_to_word = [token for idx, token in enumerate(set(all_tokens))]
+        id_to_word = np.asarray(id_to_word)
+
+        ## let's sort the indices by word frequency instead of random
+        x_train_token_ids = [[word_to_id[token] for token in x] for x in x_train]
+        count = np.zeros(id_to_word.shape)
+        for x in x_train_token_ids:
+            for token in x:
+                count[token] += 1
+        indices = np.argsort(-count)
+        id_to_word = id_to_word[indices]
+        count = count[indices]
+        word_to_id = {token: idx for idx, token in enumerate(id_to_word)}
 
         x_train_token_ids = [
             [word_to_id.get(token, -1)+1 for token in x] for x in x_train]
@@ -110,7 +122,7 @@ def preprocess_data(data_path, preprocess_data_path, train=True):
                 'Dictionary not found, please process training set first')
 
         word_to_id = np.load(os.path.join(
-            preprocess_data_path, 'yelp_word_to_id.npy')).item()
+            preprocess_data_path, 'yelp_word_to_id.npy'), allow_pickle=True).item()
 
         raw_data_path = os.path.join(data_path, "test.csv")
         x_test, y_test = [], []

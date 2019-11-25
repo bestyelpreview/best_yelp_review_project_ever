@@ -113,3 +113,5 @@ check_point/
 # OSX cache
 .DS_Store
 
+# vim
+*.swp

@@ -1,11 +1,12 @@
 #!/usr/bin/python3
 
-from datatool import YELP
+from datatool import YELP, PadSequence
 import torch
 import torch.utils.data
 import argparse
 import os
 import nltk
+import pdb
 
 if __name__ == "__main__":
     # set hyperparameters
@@ -50,8 +51,12 @@ if __name__ == "__main__":
 
     # Load batch data automatically
     train_loader = torch.utils.data.DataLoader(
-        train_set, batch_size=args.batch_size, shuffle=True, num_workers=2
+        train_set, batch_size=args.batch_size, shuffle=True, num_workers=2,
+        collate_fn=PadSequence()
     )
     test_loader = torch.utils.data.DataLoader(
-        test_set, batch_size=args.batch_size, shuffle=False, num_workers=2
+        test_set, batch_size=args.batch_size, shuffle=False, num_workers=2,
+        collate_fn=PadSequence()
     )
+    tmp = next(iter(train_loader))
+
