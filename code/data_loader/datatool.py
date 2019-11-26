@@ -1,8 +1,10 @@
 import os
 import torch
 import numpy as np
+import sys
 from torch.utils.data import Dataset
-from utils import download_url, data_parse, preprocess_data
+sys.path.append('../')
+from data_loader.utils import download_url, data_parse, preprocess_data
 import pdb
 
 class PadSequence:
@@ -29,7 +31,7 @@ class YELP(object):
     filename = "yelp-review-polarity.zip"
     tgz_md5 = 'e6dfe992364fc80ec098e48edd5afc9b'
 
-    def __init__(self, root, preprocess_path, train=True, download=False, max_len=8000):
+    def __init__(self, root, preprocess_path, train=True, download=False, vocab_size=8000):
         """
         Args:
             root (string): Root directory of dataset where directory ``yelp_review_polarity_csv``
@@ -55,11 +57,15 @@ class YELP(object):
         preprocess_data(data_path, self.preprocess_path, self.train)
 
         self.data_set = self.get_data(train=self.train)
+        self.vocab_size = vocab_size
 
     def __getitem__(self, index):
         label, review = self.data_set.iloc[index, :]
+        label = label % 2
+        data = torch.LongTensor([int(x) for x in review.split()])
+        data[data > self.vocab_size] = 0
 
-        return torch.LongTensor([int(x) for x in review.split()]), label
+        return data, label
 
     def __len__(self):
         return len(self.data_set)

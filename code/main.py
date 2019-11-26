@@ -1,41 +1,16 @@
 #!/usr/bin/python3
 
-from datatool import YELP, PadSequence
 import torch
-import torch.utils.data
+from torch.utils.data import DataLoader
 import argparse
 import os
 import nltk
+from data_loader.datatool import YELP, PadSequence
+from tools.argtools import get_args
+
 import pdb
-
 if __name__ == "__main__":
-    # set hyperparameters
-    parser = argparse.ArgumentParser()
-
-    parser.add_argument('--lr', type=float, default=1e-2, help='learning rate')
-    parser.add_argument('--wd', type=float, default=1e-3, help='weight decay')
-    parser.add_argument('--epochs', type=int, default=50,
-                        help='number of epochs for training')
-    parser.add_argument('--batch_size', type=int,
-                        default=128, help='the size of each batch')
-
-    # set training parameters
-    parser.add_argument('--gpu', type=bool, default=False,
-                        help='use gpu for training')
-    parser.add_argument('--load', type=bool, default=False,
-                        help='load model from check point')
-    parser.add_argument('--optim', type=str, default='adam',
-                        help='optimizer type, adam or rmsprop')
-
-    # set path of data and ckp
-    parser.add_argument("--preprocess", type=str, default="../data/preprocess_data",
-                        help='path of preprocess data')
-    parser.add_argument('--data', type=str, default="../data",
-                        help='path of data')
-    parser.add_argument('--ckp', type=str, default="../check_point",
-                        help='path of check point')
-
-    args = parser.parse_args()
+    args = get_args()
 
     # Install the punkt package
     if not os.path.exists("../nltk_data"):
@@ -44,19 +19,20 @@ if __name__ == "__main__":
     nltk.data.path.append("../nltk_data")
 
     # Load dataset with proprocessing, download if empt. Preprocess will only do once.
-    train_set = YELP(
-        root=args.data, preprocess_path=args.preprocess, train=True, download=True)
-    test_set = YELP(root=args.data, preprocess_path=args.preprocess,
-                    train=False, download=False)
+    train_set = YELP(root=args.data_path, preprocess_path=args.preprocess_path,
+                     train=True, download=True, vocab_size=8000)
+    test_set = YELP(root=args.data_path, preprocess_path=args.preprocess_path,
+                    train=False, download=False, vocab_size=8000)
+    pdb.set_trace()
 
     # Load batch data automatically
-    train_loader = torch.utils.data.DataLoader(
-        train_set, batch_size=args.batch_size, shuffle=True, num_workers=2,
-        collate_fn=PadSequence()
+    train_loader = DataLoader(
+        train_set, batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers,
+        pin_memory=True, collate_fn=PadSequence()
     )
-    test_loader = torch.utils.data.DataLoader(
-        test_set, batch_size=args.batch_size, shuffle=False, num_workers=2,
-        collate_fn=PadSequence()
+    test_loader = DataLoader(
+        test_set, batch_size=args.batch_size, shuffle=False, num_workers=args.num_workers,
+        pin_memory=True, collate_fn=PadSequence()
     )
     tmp = next(iter(train_loader))
 
