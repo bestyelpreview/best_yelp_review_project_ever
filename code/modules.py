@@ -28,6 +28,6 @@ class LSTM_Net(nn.Module):
             tmp, _ = pad_packed_sequence(tmp, batch_first=True)
         else:
             tmp, (hn, cn) = self.lstm(x)
-        out = torch.sigmoid(self.fc(hn[-1]))
+        out = self.fc(hn[-1])
         return out
 

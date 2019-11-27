@@ -29,6 +29,8 @@ def get_args():
                         help='path of check point')
     parser.add_argument('--out_dir', type=str, default="../out",
                         help='output directory')
+    parser.add_argument('--seed', type=int, default=1,
+                        help='seed for random number generator')
 
     args = parser.parse_args()
     return args
