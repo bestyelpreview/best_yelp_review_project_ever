@@ -115,3 +115,9 @@ check_point/
 
 # vim
 *.swp
+
+# wandb
+**/wandb/
+
+# output
+**/out/

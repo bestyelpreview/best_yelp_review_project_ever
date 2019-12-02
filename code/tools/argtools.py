@@ -21,6 +21,8 @@ def get_args():
     parser.add_argument('--num_workers', type=int, default=4,
                         help='number of workers for loading dataset')
     # set path of data and ckp
+    parser.add_argument('--vocab_size', type=int, default=8000,
+                        help='vocabulary size')
     parser.add_argument("--preprocess_path", type=str, default="../data/preprocess_data",
                         help='path of preprocess data')
     parser.add_argument('--data_path', type=str, default="../data",
@@ -31,6 +33,10 @@ def get_args():
                         help='output directory')
     parser.add_argument('--seed', type=int, default=1,
                         help='seed for random number generator')
+    parser.add_argument('--wandb_project', type=str, default='cs547',
+                        help='wandb project name')
+    parser.add_argument('--wandb_entity', type=str,
+                        help='wandb entity')
 
     args = parser.parse_args()
     return args

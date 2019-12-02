@@ -123,9 +123,9 @@ if __name__ == "__main__":
 
     # Load dataset with proprocessing, download if empty. Preprocess will only do once.
     train_set = YELP(root=args.data_path, preprocess_path=args.preprocess_path,
-                     train=True, download=True, vocab_size=8000)
+                     train=True, download=True, vocab_size=args.vocab_size)
     test_set = YELP(root=args.data_path, preprocess_path=args.preprocess_path,
-                    train=False, download=False, vocab_size=8000)
+                    train=False, download=False, vocab_size=args.vocab_size)
     # Load batch data automatically
     train_loader = DataLoader(
         train_set, batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers,
@@ -138,20 +138,21 @@ if __name__ == "__main__":
 
     #  models
     reset_seed(args.seed)
-    model = LSTM_Net(vocab_size=8000+1, embed_size=512, hidden_size=512)
+    model = LSTM_Net(vocab_size=args.vocab_size+1, embed_size=512, hidden_size=512)
     print("Model Params {}".format(sum(p.numel() for p in model.parameters() if p.requires_grad)))
 
     # output
-    out_dir = './out/AE'
+    out_dir = './out/'
     if not os.path.exists(out_dir + '/res'):
         os.makedirs(out_dir + '/res')
     if not os.path.exists(out_dir + '/models'):
         os.makedirs(out_dir + '/models')
 
     # wandb
-    wandb.init(project='cs547',
-               entity='zhepeiw2',
-               name='yelp_pid{}'.format(os.getpid()))
+    if args.wandb_entity is not None:
+        wandb.init(project=args.wandb_project,
+                   entity=args.wandb_entity,
+                   name='yelp_pid{}'.format(os.getpid()))
 
     #  training
     trainer(model, train_loader, test_loader, device, out_dir,
