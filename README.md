@@ -1,17 +1,46 @@
-# The Best Yelp Review Project Ever  
+# CS547 Final Project: LSTM, bi-LSTM and Attention model
+Source code, project reports, execution instructions for our implementations of LSTM, bi-LSTM and Attention models for Yelp Review Polarity.
 
-## Project Description
+## Team members
+* Zhepei Wang (<zhepeiw2@illinois.edu>)
+* Peilun Zhang (<peilunz2@illinois.edu>)
+* Hao Wu (<haow11@illinois.edu>)
+* Efthymios Tzinis (<etzinis2@illinois.edu>)
+* Sahand Mozaffari (<sahandm2@illinois.edu>)
 
-**Project Idea: LSTM, bi-LSTM and Attention model**
+## Folder structures
 
-* Implement a simple LSTM, bi-LSTM and Attention model for Yelp Review Polarity. It is a binary classification problem for NLP. You should compare the accuracies for these three models
+```
+├── code
+│   ├── data
+│   ├── data_loader
+│   │   ├── __init__.py
+│   │   ├── datatool.py
+│   │   └── utils.py
+│   ├── main.py
+│   ├── modules.py
+│   ├── tools
+│   │   ├── __init__.py
+│   │   ├── argtools.py
+│   │   └── misc.py
+│   └── zhepei_driver.sh
+├── LICENSE
+├── README.md
+└── requirements.txt
+```
 
-* Description:
-    * Sentiment analysis is a popular topic in NLP. This project helps you apply LSTM to solve real world problems. You can start by building a basic LSTM model and gradually go to more complicated models.
-    * Yelp Review Polarity is a publicly available dataset on Kaggle. It contains customers’ reviews and their attitudes, positive or negative. It is a binary classification problem.
-* Code:
-    * https://github.com/leifanus/nlp-tutorial
-* Paper:
-    * https://arxiv.org/pdf/1706.03762.pdf
-* Dataset:
-    * https://www.kaggle.com/irustandi/yelp-review-polarity/version/1#yelp_review_polarity_csv.zip
+## Execution Instructions
+
+**Prerequisite**
+* Python V_T_B_A
+* PyTorch V_T_B_A
+
+**Execution**
+1. Install the required libaries.
+```
+pip install -r requirements.txt
+```
+2. Execute the magic scripts
+```
+./run.sh
+```
