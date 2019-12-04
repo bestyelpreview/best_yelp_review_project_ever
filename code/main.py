@@ -62,6 +62,8 @@ def trainer(model, train_loader, val_loader,
         print('====> Training loss = {:.6f}'.format(np.array(curr_train_loss).mean()))
         # validate
         model.eval()
+        curr_val_correct = 0
+        curr_val_total = 0
         curr_val_loss = []
         for i, (x, y, lengths) in enumerate(tqdm(val_loader)):
             x = x.cuda()
@@ -73,9 +75,14 @@ def trainer(model, train_loader, val_loader,
                 loss = loss_fn(y_pred.squeeze(), y.float())
                 if np.isnan(loss.item()):
                     pdb.set_trace()
+                y_pred_bin = (torch.sigmoid(y_pred) > 0.5).long()
+                curr_val_correct += sum(y_pred_bin.squeeze() == y)
+                curr_val_total += len(y)
             curr_val_loss.append(loss.item())
             print(np.array(curr_val_loss).mean())
 
+        val_acc = curr_val_correct.float().item() / curr_val_total
+        print('====> Validation loss = {:.6f}'.format(val_acc))
         val_stat = np.array(curr_val_loss).mean()
         print('====> Validation loss = {:.6f}'.format(val_stat))
         scheduler.step(val_stat)
@@ -96,6 +103,7 @@ def trainer(model, train_loader, val_loader,
             wandb.log({
                 'train_loss': np.array(curr_train_loss).mean(),
                 'val_loss': val_stat,
+                'val_acc': val_acc
             })
         plt.close()
 
