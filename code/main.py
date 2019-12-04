@@ -1,4 +1,11 @@
 #!/usr/bin/python3
+"""!
+@brief Experiment runnign using pytorch LSTM predictor wrapper
+
+@authors Zhepei Wang <zhepeiw03@gmail.com>
+         Efthymios Tzinis {etzinis2@illinois.edu}
+@copyright University of illinois at Urbana Champaign
+"""
 
 import torch
 import torch.nn as nn
@@ -16,13 +23,13 @@ import wandb
 
 from tools.argtools import get_args
 from data_loader.datatool import YELP, PadSequence
-from modules import LSTM_Net
+from models import LSTMPredictorWrapper
 from tools.misc import reset_seed
 
 import pdb
 
 def trainer(model, train_loader, val_loader,
-            device, out_dir, lr=0.01, max_epochs=45):
+            out_dir, lr=0.01, max_epochs=45):
     opt = optim.Adam(model.parameters(), lr=lr)
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(opt, factor=0.5, patience=10)
     loss_fn = nn.BCEWithLogitsLoss()
@@ -35,13 +42,13 @@ def trainer(model, train_loader, val_loader,
         # train
         print('==> Start training epoch {} / {}'.format(ep, max_epochs))
         t_start = time.time()
-        model = model.to(device)
+        model = model.cuda()
         model.train()
         curr_train_loss = []
         for i, (x, y, lengths) in enumerate(tqdm(train_loader)):
-            x = x.to(device)
-            y = y.to(device)
-            lengths = lengths.to(device)
+            x = x.cuda()
+            y = y.cuda()
+            lengths = lengths.cuda()
             y_pred = model(x, lengths)
             loss = loss_fn(y_pred.squeeze(), y.float())
             if np.isnan(loss.item()):
@@ -50,22 +57,25 @@ def trainer(model, train_loader, val_loader,
             opt.zero_grad()
             loss.backward()
             opt.step()
+            print(np.array(curr_train_loss).mean())
 
         print('====> Training loss = {:.6f}'.format(np.array(curr_train_loss).mean()))
         # validate
         model.eval()
         curr_val_loss = []
         for i, (x, y, lengths) in enumerate(tqdm(val_loader)):
-            x = x.to(device)
+            x = x.cuda()
             with torch.no_grad():
-                x = x.to(device)
-                y = y.to(device)
-                lengths = lengths.to(device)
+                x = x.cuda()
+                y = y.cuda()
+                lengths = lengths.cuda()
                 y_pred = model(x, lengths)
                 loss = loss_fn(y_pred.squeeze(), y.float())
                 if np.isnan(loss.item()):
                     pdb.set_trace()
             curr_val_loss.append(loss.item())
+            print(np.array(curr_val_loss).mean())
+
         val_stat = np.array(curr_val_loss).mean()
         print('====> Validation loss = {:.6f}'.format(val_stat))
         scheduler.step(val_stat)
@@ -80,11 +90,13 @@ def trainer(model, train_loader, val_loader,
         all_res.append(curr_res)
         pickle.dump(all_res, open(os.path.join(out_dir, 'res/results.pk'), 'wb'))
         model = model.cpu()
-        # logging
-        wandb.log({
-            'train_loss': np.array(curr_train_loss).mean(),
-            'val_loss': val_stat,
-        })
+
+        # logging to wandb
+        if args.wandb_entity is not None:
+            wandb.log({
+                'train_loss': np.array(curr_train_loss).mean(),
+                'val_loss': val_stat,
+            })
         plt.close()
 
         if len(out_cache) < cache_limit or val_stat < out_cache[-1][0]:
@@ -111,9 +123,10 @@ def trainer(model, train_loader, val_loader,
             out_cache = sorted(out_cache)
 
 if __name__ == "__main__":
-    #  cuda
-    device = torch.device('cuda:0')
     args = get_args()
+    #  cuda
+    os.environ['CUDA_VISIBLE_DEVICES'] = ','.join(
+        [cad for cad in args.cuda_available_devices])
     reset_seed(args.seed)
     # Install the punkt package
     if not os.path.exists("../nltk_data"):
@@ -138,7 +151,13 @@ if __name__ == "__main__":
 
     #  models
     reset_seed(args.seed)
-    model = LSTM_Net(vocab_size=args.vocab_size+1, embed_size=512, hidden_size=512)
+    model = LSTMPredictorWrapper(vocabulary_size=args.vocab_size + 1,
+                                 embedding_dimension=args.embedding_size,
+                                 dropout_rate=args.dropout_rate,
+                                 num_layers=args.num_layers,
+                                 num_hidden_units=args.num_hidden_units,
+                                 LSTM_type=args.model_type,
+                                 return_attention_weights=False)
     print("Model Params {}".format(sum(p.numel() for p in model.parameters() if p.requires_grad)))
 
     # output
@@ -155,6 +174,6 @@ if __name__ == "__main__":
                    name='yelp_pid{}'.format(os.getpid()))
 
     #  training
-    trainer(model, train_loader, test_loader, device, out_dir,
+    trainer(model, train_loader, test_loader, out_dir,
            lr=args.lr, max_epochs=args.epochs)
 
