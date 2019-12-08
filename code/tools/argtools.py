@@ -21,7 +21,7 @@ def create_model_parameters(parser, create_list_model_args=False):
     if create_list_model_args:
         parser.add_argument('--vocab_size', type=int, default=[8000],
                             nargs='+', help='vocabulary size')
-        parser.add_argument("--model_type", type=str, nargs='+',
+        parser.add_argument("-M", "--model_type", type=str, nargs='+',
                             help="The type of model you would like to use for "
                                  "prediction. LSTM? A bidirectional LSTM "
                                  "(BLSTM) or a BLSTM with Attention on "
@@ -45,7 +45,7 @@ def create_model_parameters(parser, create_list_model_args=False):
     else:
         parser.add_argument('--vocab_size', type=int, default=8000,
                             help='vocabulary size')
-        parser.add_argument("--model_type", type=str,
+        parser.add_argument("-M", "--model_type", type=str,
                             help="The type of model you would like to use for "
                                  "prediction. LSTM? A bidirectional LSTM "
                                  "(BLSTM) or a BLSTM with Attention on "
@@ -78,7 +78,7 @@ def get_args(parallel_experiments=False):
                             available for running this experiment""",
                         default=['2'],
                         choices=['0', '1', '2', '3'])
-    parser.add_argument('--epochs', type=int, default=50,
+    parser.add_argument('--epochs', type=int, default=20,
                         help='number of epochs for training')
     parser.add_argument('-bs', '--batch_size', type=int,
                         default=128, help='the size of each batch')
