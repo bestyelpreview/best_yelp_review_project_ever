@@ -58,6 +58,7 @@ def trainer(model, train_loader, val_loader,
             loss.backward()
             opt.step()
             print(np.array(curr_train_loss).mean())
+            break
 
         print('====> Training loss = {:.6f}'.format(np.array(curr_train_loss).mean()))
         # validate
@@ -80,6 +81,7 @@ def trainer(model, train_loader, val_loader,
                 curr_val_total += len(y)
             curr_val_loss.append(loss.item())
             print(np.array(curr_val_loss).mean())
+            break
 
         val_acc = curr_val_correct.float().item() / curr_val_total
         print('====> Validation loss = {:.6f}'.format(val_acc))
@@ -93,6 +95,7 @@ def trainer(model, train_loader, val_loader,
         curr_res = {}
         curr_res['train_loss'] = curr_train_loss
         curr_res['val_loss'] = curr_val_loss
+        curr_res['val_acc'] = val_acc
         curr_res['time'] = t_ep
         all_res.append(curr_res)
         pickle.dump(all_res, open(os.path.join(out_dir, 'res/results.pk'), 'wb'))
@@ -169,7 +172,12 @@ if __name__ == "__main__":
     print("Model Params {}".format(sum(p.numel() for p in model.parameters() if p.requires_grad)))
 
     # output
-    out_dir = './out/'
+    specific_folder = 'M_{}_L_{}_V_{}_E_{}_H_{}_Dr_{}'.format(
+        args.model_type, args.num_layers, args.vocab_size,
+        args.embedding_size, args.num_hidden_units, args.dropout_rate
+    )
+
+    out_dir = os.path.join('./out/', specific_folder)
     if not os.path.exists(out_dir + '/res'):
         os.makedirs(out_dir + '/res')
     if not os.path.exists(out_dir + '/models'):
