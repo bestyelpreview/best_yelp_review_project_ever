@@ -219,6 +219,7 @@ def run_experiment(args):
             lr=args.lr, max_epochs=args.epochs)
 
     del model
+    torch.cuda.empty_cache()
 
 
 if __name__ == "__main__":
