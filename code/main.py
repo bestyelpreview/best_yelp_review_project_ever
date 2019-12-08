@@ -58,7 +58,6 @@ def trainer(args, model, train_loader, val_loader,
             loss.backward()
             opt.step()
             print(np.array(curr_train_loss).mean())
-            break
 
         print('====> Training loss = {:.6f}'.format(np.array(curr_train_loss).mean()))
         # validate
@@ -81,7 +80,6 @@ def trainer(args, model, train_loader, val_loader,
                 curr_val_total += len(y)
             curr_val_loss.append(loss.item())
             print(np.array(curr_val_loss).mean())
-            break
 
         val_acc = curr_val_correct.float().item() / curr_val_total
         print('====> Validation loss = {:.6f}'.format(val_acc))
@@ -212,7 +210,7 @@ def run_experiment(args):
     if args.wandb_entity is not None:
         wandb.init(project=args.wandb_project,
                    entity=args.wandb_entity,
-                   name='yelp_pid{}'.format(os.getpid()))
+                   name='yelp_{}_pid{}'.format(specific_folder, os.getpid()))
 
     #  training
     trainer(args, model, train_loader, test_loader, out_dir,
