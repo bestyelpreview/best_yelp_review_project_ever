@@ -57,7 +57,7 @@ def trainer(args, model, train_loader, val_loader,
             opt.zero_grad()
             loss.backward()
             opt.step()
-            print(np.array(curr_train_loss).mean())
+            #  print(np.array(curr_train_loss).mean())
 
         print('====> Training loss = {:.6f}'.format(np.array(curr_train_loss).mean()))
         # validate
@@ -76,13 +76,13 @@ def trainer(args, model, train_loader, val_loader,
                 if np.isnan(loss.item()):
                     pdb.set_trace()
                 y_pred_bin = (torch.sigmoid(y_pred) > 0.5).long()
-                curr_val_correct += sum(y_pred_bin.squeeze() == y)
+                curr_val_correct += sum(y_pred_bin.squeeze() == y).long()
                 curr_val_total += len(y)
             curr_val_loss.append(loss.item())
-            print(np.array(curr_val_loss).mean())
+            #  print(np.array(curr_val_loss).mean())
 
         val_acc = curr_val_correct.float().item() / curr_val_total
-        print('====> Validation loss = {:.6f}'.format(val_acc))
+        print('====> Validation accuracy = {:.6f}'.format(val_acc))
         val_stat = np.array(curr_val_loss).mean()
         print('====> Validation loss = {:.6f}'.format(val_stat))
         scheduler.step(val_stat)
