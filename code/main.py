@@ -28,7 +28,7 @@ from tools.misc import reset_seed
 
 import pdb
 
-def trainer(model, train_loader, val_loader,
+def trainer(args, model, train_loader, val_loader,
             out_dir, lr=0.01, max_epochs=45):
     opt = optim.Adam(model.parameters(), lr=lr)
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(opt, factor=0.5, patience=10)
@@ -36,7 +36,7 @@ def trainer(model, train_loader, val_loader,
 
     start_ep = 0
     out_cache = []
-    cache_limit = 5
+    cache_limit = 2
     all_res = []
     for ep in range(start_ep, max_epochs):
         # train
@@ -133,8 +133,29 @@ def trainer(model, train_loader, val_loader,
             out_cache.append((val_stat, fresh))
             out_cache = sorted(out_cache)
 
-if __name__ == "__main__":
-    args = get_args()
+
+def experiment2string(args):
+    cor_string = 'M_{}_L_{}_V_{}_E_{}_H_{}_Dr_{}'.format(
+        args.model_type, args.num_layers, args.vocab_size,
+        args.embedding_size, args.num_hidden_units,
+        args.dropout_rate
+    )
+    return cor_string
+
+
+def safe_run_experiment(args):
+    try:
+        run_experiment(args)
+        raised_exception = False
+    except Exception as e:
+        raised_exception = e
+    finally:
+        torch.cuda.empty_cache()
+        if raised_exception:
+            raise raised_exception
+
+
+def run_experiment(args):
     #  cuda
     os.environ['CUDA_VISIBLE_DEVICES'] = ','.join(
         [cad for cad in args.cuda_available_devices])
@@ -146,17 +167,23 @@ if __name__ == "__main__":
     nltk.data.path.append("../nltk_data")
 
     # Load dataset with proprocessing, download if empty. Preprocess will only do once.
-    train_set = YELP(root=args.data_path, preprocess_path=args.preprocess_path,
-                     train=True, download=True, vocab_size=args.vocab_size)
-    test_set = YELP(root=args.data_path, preprocess_path=args.preprocess_path,
-                    train=False, download=False, vocab_size=args.vocab_size)
+    train_set = YELP(root=args.data_path,
+                     preprocess_path=args.preprocess_path,
+                     train=True, download=True,
+                     vocab_size=args.vocab_size)
+    test_set = YELP(root=args.data_path,
+                    preprocess_path=args.preprocess_path,
+                    train=False, download=False,
+                    vocab_size=args.vocab_size)
     # Load batch data automatically
     train_loader = DataLoader(
-        train_set, batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers,
+        train_set, batch_size=args.batch_size, shuffle=True,
+        num_workers=args.num_workers,
         pin_memory=True, collate_fn=PadSequence()
     )
     test_loader = DataLoader(
-        test_set, batch_size=args.batch_size, shuffle=False, num_workers=args.num_workers,
+        test_set, batch_size=args.batch_size, shuffle=False,
+        num_workers=args.num_workers,
         pin_memory=True, collate_fn=PadSequence()
     )
 
@@ -169,13 +196,11 @@ if __name__ == "__main__":
                                  num_hidden_units=args.num_hidden_units,
                                  LSTM_type=args.model_type,
                                  return_attention_weights=False)
-    print("Model Params {}".format(sum(p.numel() for p in model.parameters() if p.requires_grad)))
+    print("Model Params {}".format(
+        sum(p.numel() for p in model.parameters() if p.requires_grad)))
 
     # output
-    specific_folder = 'M_{}_L_{}_V_{}_E_{}_H_{}_Dr_{}'.format(
-        args.model_type, args.num_layers, args.vocab_size,
-        args.embedding_size, args.num_hidden_units, args.dropout_rate
-    )
+    specific_folder = experiment2string(args)
 
     out_dir = os.path.join('./out/', specific_folder)
     if not os.path.exists(out_dir + '/res'):
@@ -190,6 +215,14 @@ if __name__ == "__main__":
                    name='yelp_pid{}'.format(os.getpid()))
 
     #  training
-    trainer(model, train_loader, test_loader, out_dir,
-           lr=args.lr, max_epochs=args.epochs)
+    trainer(args, model, train_loader, test_loader, out_dir,
+            lr=args.lr, max_epochs=args.epochs)
+
+    del model
+
+
+if __name__ == "__main__":
+    args = get_args()
+    run_experiment(args)
+
 
