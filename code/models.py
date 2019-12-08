@@ -64,8 +64,6 @@ class LSTMPredictorWrapper(nn.Module):
             raise NotImplementedError("LSTM of type: {} is not "
                 "implemented in this wrapper!".format(LSTM_type))
         self.n_directions = 2**int(self.bidirectional)
-        print('PSOLEDRA')
-        print(self.n_directions)
 
         self.embedding = nn.Embedding(self.V, self.E)
         self.input_dropout = nn.Dropout(self.D)
