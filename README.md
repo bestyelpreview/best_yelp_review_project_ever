@@ -11,21 +11,24 @@ Source code, project reports, execution instructions for our implementations of 
 ## Folder structures
 
 ```
+├── LICENSE
+├── README.md
 ├── code
-│   ├── data
 │   ├── data_loader
 │   │   ├── __init__.py
 │   │   ├── datatool.py
 │   │   └── utils.py
 │   ├── main.py
+│   ├── models.py
 │   ├── modules.py
+│   ├── parallel_experiment_runner.py
+│   ├── thymios_driver.sh
 │   ├── tools
 │   │   ├── __init__.py
 │   │   ├── argtools.py
 │   │   └── misc.py
+│   ├── vis_results.py
 │   └── zhepei_driver.sh
-├── LICENSE
-├── README.md
 └── requirements.txt
 ```
 
