@@ -35,15 +35,14 @@ Source code, project reports, execution instructions for our implementations of 
 ## Execution Instructions
 
 **Prerequisite**
-* Python V_T_B_A
-* PyTorch V_T_B_A
+* Python >= 3.6.9 
 
 **Execution**
 1. Install the required libaries.
 ```
 pip install -r requirements.txt
 ```
-2. Execute the magic scripts
+2. Execute using the existing script
 ```
-./run.sh
+cd code/ && ./run.sh 
 ```
