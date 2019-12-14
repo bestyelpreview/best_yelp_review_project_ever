@@ -22,13 +22,12 @@ Source code, project reports, execution instructions for our implementations of 
 │   ├── models.py         # Wrapper class for all three different model structures
 │   ├── modules.py        
 │   ├── parallel_experiment_runner.py # Helper file to paralleling experiments 
-│   ├── thymios_driver.sh
 │   ├── tools
 │   │   ├── __init__.py
 │   │   ├── argtools.py  # Util functions to get and parse command line arguments
 │   │   └── misc.py         
 │   ├── vis_results.py   # File to generate visualizations 
-│   └── zhepei_driver.sh
+│   └── run.sh           # Script to run parallelly  
 └── requirements.txt
 ```
 
@@ -44,5 +43,5 @@ pip install -r requirements.txt
 ```
 2. Execute using the existing script
 ```
-cd code/ && ./run.sh 
+cd code && ./run.sh 
 ```
