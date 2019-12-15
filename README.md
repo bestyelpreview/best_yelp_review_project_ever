@@ -63,9 +63,9 @@ More options can be found in the next section.
 | ckp             | Path of check point folder                               | str   | "../check_point"               |                                |
 | out_dir         | Path of output folder                                    | str   | "../out"                       |                                |
 | seed            | Seed for random number generator                         | int   | 1                              |                                |
-| wamdb_project   | wandb project name                                       | str   | "cs547"                        |                                |
-| wandb_entity    | wandb entity name                                        | str   | "wandb entity"                 |                                |
-| vocab_size      | vocabulary size                                          | int   | [8000]                         |                                |
+| wandb_project   | Wandb project name                                       | str   | "cs547"                        |                                |
+| wandb_entity    | Wandb entity name                                        | str   | "wandb entity"                 |                                |
+| vocab_size      | Vocabulary size                                          | int   | [8000]                         |                                |
 | M               | The type of model used for prediction                    | str   | ['LSTM', 'BLSTM', 'BLSTM-Att'] | ['LSTM', 'BLSTM', 'BLSTM-Att'] |
 | L               | Number of hidden layers in the RNN                       | int   | [1, 2, 3]                      |                                |
 | H               | Number of hidden units for each layer in selected model  | int   | [128, 256]                     |                                |
