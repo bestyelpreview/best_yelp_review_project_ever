@@ -25,6 +25,7 @@ def get_results(path):
         if max(val_accs) > best_acc:
             best_acc = max(val_accs)
             best_acc_idx = idx
+        print('Model is {} with test accuracy {:.4f}'.format(spec, max(val_accs)))
     fp = res_files[best_acc_idx]
     spec = fp.split('/')[-3]
     res = pickle.load(open(fp,'rb'))
